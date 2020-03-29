@@ -1,0 +1,1 @@
+export const FETCH_INITIAL_DETAILS = 'fetchInitialDetails';
