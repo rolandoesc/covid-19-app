@@ -36,7 +36,7 @@ const ApiService = {
 	// },
 
 	get(slug: string) {
-		return axios.get(`https://corona-stats.online/${slug ? `${slug}` : ''}?format=json`)
+		return axios.get(`https://exchange.vcoud.com/coronavirus/${slug ? `${slug}` : 'latest'}`)
 	},
 
 	// post(resource, params) {
