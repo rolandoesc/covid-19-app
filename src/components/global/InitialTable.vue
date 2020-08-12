@@ -1,7 +1,7 @@
 <template>
   <div class="px-8">
     <div class="w-full justify-end flex">
-      <div class="flex items-center border-b border-b-2 border-green-500 py-2 w-1/3">
+      <div class="flex items-center border-b border-b-2 border-green-500 py-2 lg:w-1/3 xs:w-full">
         <input
           type="text"
           v-model="typedCountry"
@@ -23,30 +23,40 @@
               v-for="(header, headerIndex) in tableHeaders"
               :key="headerIndex"
               class="px-4 py-2 cursor-pointer"
+              :class="header.extraClasses"
               @click="sortBy(header)"
             >{{header.text}}</th>
           </tr>
         </thead>
-        <tbody class="overflow-y-scroll w-full" >
+        <tbody class="overflow-y-scroll w-full">
           <tr
             v-for="(country, countryIndex) in filteredCountries"
             :key="countryIndex"
             class="font-medium"
             :class="[countryIndex % 2 === 0 ? 'bg-gray-100' : '']"
+            @click="checkCountry(country)"
           >
             <td class="border px-4 py-2 items-center text-left">
-              <img
-                :src="`https://www.countryflags.io/${country.symbol}/flat/24.png`"
-                :alt="`Bandera de `"
+              <object
                 class="inline-block"
-              />
-              {{country.nameEs}}
+                :data="`https://www.countryflags.io/${country.symbol}/flat/24.png`"
+                :alt="`Bandera de `"
+                type="image/png"
+              >
+                <img
+                  :src="require('@/assets/missing_flag.png')"
+                  width="24"
+                  height="24"
+                  class="inline-block"
+                />
+              </object>
+              <span class="xs:hidden">{{country.nameEs}}</span>
             </td>
             <td class="border px-4 py-2">{{country.totalCases}}</td>
             <td class="border px-4 py-2 text-red-700">{{country.totalDeaths}}</td>
             <td class="border px-4 py-2 text-green-700">{{country.totalRecovered}}</td>
             <td class="border px-4 py-2 text-orange-600">{{country.seriousCases}}</td>
-            <td class="border px-4 py-2 text-orange-400">{{country.currentInfected}}</td>
+            <td class="border px-4 py-2 text-orange-400 xs:hidden">{{country.currentInfected}}</td>
           </tr>
         </tbody>
       </table>
@@ -60,8 +70,11 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { FETCH_INITIAL_DETAILS } from "@/store/actions.type";
-import { CountryInterface } from "../models/CountryInterface";
+import { 
+  FETCH_INITIAL_DETAILS,
+  CHECK_SELECTED_COUNTRY
+} from "@/store/actions.type";
+import { CountryInterface } from "@/models/CountryInterface";
 type TableHeader = {
   text: string;
   isFilterable: boolean;
@@ -76,37 +89,43 @@ export default Vue.extend({
           text: "País",
           isFilterable: true,
           isFiltered: false,
-          property: "nameEs"
+          property: "nameEs",
+          extraClasses: ""
         },
         {
-          text: "Total confirmados",
+          text: "Confirmados",
           isFilterable: true,
           isFiltered: false,
-          property: "totalCases"
+          property: "totalCases",
+          extraClasses: ""
         },
         {
-          text: "Total de muertos",
+          text: "Fallecidos",
           isFilterable: true,
           isFiltered: false,
-          property: "totalDeaths"
+          property: "totalDeaths",
+          extraClasses: ""
         },
         {
           text: "Recuperados",
           isFilterable: true,
           isFiltered: false,
-          property: "totalRecovered"
+          property: "totalRecovered",
+          extraClasses: ""
         },
         {
-          text: "En condición crítica",
+          text: "Críticos",
           isFilterable: true,
           isFiltered: false,
-          property: "seriousCases"
+          property: "seriousCases",
+          extraClasses: ""
         },
         {
-          text: "Actualmente contagiados",
+          text: "Contagiados",
           isFilterable: true,
           isFiltered: false,
-          property: "currentInfected"
+          property: "currentInfected",
+          extraClasses: "xs:hidden"
         }
       ],
       countriesList: [] as Array<CountryInterface>,
@@ -138,6 +157,10 @@ export default Vue.extend({
         );
         type.isFiltered = !type.isFiltered;
       }
+    },
+    checkCountry(country) {
+      console.log('este es el country', country)
+      this.$store.dispatch(CHECK_SELECTED_COUNTRY, country)
     }
   },
   computed: {

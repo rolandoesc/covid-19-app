@@ -2,13 +2,16 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import {
   FETCH_INITIAL_DETAILS,
-  ADD_NEW_FIELDS
+  ADD_NEW_FIELDS,
+  CHECK_SELECTED_COUNTRY
 } from './actions.type'
 import {
-  SET_INITIAL_DETAILS
+  SET_INITIAL_DETAILS,
+  SET_SELECTED_COUNTRY
 } from './mutations.type'
 import ApiService from '@/common/api.service'
 import { CountryInterface } from '@/models/CountryInterface'
+import router from '@/router'
 // import { WorldStatsInterface} from '@/models/WorldStatsInterface'
 
 Vue.use(Vuex)
@@ -16,7 +19,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     worldStats: {},
-    countries: []
+    countries: [],
+    selectedCountry: {}
   },
   actions: {
     async [FETCH_INITIAL_DETAILS](context) {
@@ -46,12 +50,21 @@ export default new Vuex.Store({
         return country;
       })
       context.commit(SET_INITIAL_DETAILS, data)
+    },
+    [CHECK_SELECTED_COUNTRY](context, country) {
+      context.commit(SET_SELECTED_COUNTRY, country)
+      router.push({
+        path: country.slug+'/stats'
+      })
     }
   },
   mutations: {
     [SET_INITIAL_DETAILS](state, { countriesList, worldStats }) {
       state.countries = countriesList;
-      state.worldStats = worldStats;
+      state.worldStats = worldStats[0];
+    },
+    [SET_SELECTED_COUNTRY](state, country) {
+      state.selectedCountry = country
     }
   },
   modules: {

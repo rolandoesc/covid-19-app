@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import InitialTable from '@/components/InitialTable.vue'
+import GlobalTable from '@/views/GlobalTable.vue'
 
 Vue.use(VueRouter)
 
@@ -9,11 +9,25 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: InitialTable
+    component: GlobalTable
   },
   {
-    path: '/about',
-    name: 'About',
+    path: '/:countrySlug/stats',
+    children: [
+      {
+        path: "",
+        name: "CountryStatistics",
+        component: () => import("@/views/CountryInfo.vue"),
+      },
+      {
+        path: "24h",
+        name: "CampaignCreationWizard",
+      },
+      {
+        path: ":campaign_id/update",
+        name: "UpdateCampaign",
+      }
+    ],
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
